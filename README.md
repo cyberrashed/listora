@@ -2,6 +2,8 @@
 
 A classifieds marketplace for the US market: an Android app built with Flutter, and a Next.js back office that also serves the app's API. Data lives in MongoDB.
 
+The back office and the API run at [listora-xi.vercel.app](https://listora-xi.vercel.app), with the data on MongoDB Atlas.
+
 ## What it does
 
 In the app, people:
@@ -142,7 +144,7 @@ Listings end after 30 days, and sellers get a heads-up three days before. Photos
 cd web && npm run cron
 ```
 
-The job only touches what is due, so running it more often does no harm.
+The job only touches what is due, so running it more often does no harm. On Vercel, `web/vercel.json` runs it once a day.
 
 ## Payments
 
