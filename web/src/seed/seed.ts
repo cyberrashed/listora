@@ -196,9 +196,13 @@ async function seedListings() {
 
 async function seed() {
   const { connection } = await connectDb();
-  await connection.dropDatabase();
+  // Collection by collection: a hosted database user may read and write but
+  // not drop the whole database.
+  for (const collection of await connection.db!.collections()) {
+    await collection.drop();
+  }
   // A running server built its indexes when it started, against the old
-  // database. Build them again here, or text and map searches fail.
+  // collections. Build them again here, or text and map searches fail.
   await connection.syncIndexes();
 
   const passwordHash = await hashPassword(password!);
