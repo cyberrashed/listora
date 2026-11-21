@@ -1,0 +1,28 @@
+/* Generated from design/tokens.json by design/build-tokens.mjs. Do not edit. */
+:root {
+  --ground: #f4f4f1;
+  --surface: #ffffff;
+  --raised: #f6f6f4;
+  --active: #ebebe8;
+  --border: #e8e8e5;
+  --rule: #f0f0ee;
+  --control: #cdcdc9;
+  --text: #131416;
+  --muted: #5d5f60;
+  --accent: #1b6c80;
+  --on-accent: #ffffff;
+  --primary: #1d1f20;
+  --on-primary: #ffffff;
+  --positive: #1e7b4f;
+  --negative: #c4242a;
+  --warning: #92400e;
+  --pill-positive-bg: #dcfae5;
+  --pill-positive-ink: #04250e;
+  --pill-negative-bg: #ffedea;
+  --pill-negative-ink: #831c1e;
+  --pill-warning-bg: #fffbeb;
+  --pill-warning-ink: #92400e;
+  --pill-neutral-bg: #ebebe8;
+  --pill-neutral-ink: #353736;
+  --chart: #00809e;
+}
