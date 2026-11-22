@@ -18,3 +18,21 @@ Future<void> waitFor(WidgetTester tester, Finder finder) async {
       .join(' | ');
   fail('Timed out waiting for $finder\nOn screen: $onScreen');
 }
+
+/// Scrolls the page down until [finder] is built and on screen. A listing's
+/// seller sits below its photos, out of view until the page scrolls. Only
+/// the page is scrolled: the photo gallery inside it scrolls sideways.
+Future<void> scrollTo(WidgetTester tester, Finder finder) async {
+  await tester.scrollUntilVisible(
+    finder,
+    300,
+    scrollable: find
+        .byWidgetPredicate(
+          (widget) =>
+              widget is Scrollable &&
+              widget.axisDirection == AxisDirection.down,
+        )
+        .first,
+  );
+  await tester.pump();
+}

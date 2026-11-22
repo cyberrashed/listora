@@ -1,8 +1,14 @@
 # Listora
 
+![Listora: a listing in the back office, and the same listing in the Android app](design/screens/hero.jpg)
+
 A classifieds marketplace for the US market: an Android app built with Flutter, and a Next.js back office that also serves the app's API. Data lives in MongoDB.
 
 The back office and the API run at [listora-xi.vercel.app](https://listora-xi.vercel.app), with the data on MongoDB Atlas.
+
+[![The walkthrough video: the app, then the back office](design/video/listora-walkthrough-poster.jpg)](design/video/listora-walkthrough.mp4)
+
+[Watch the two-minute walkthrough (MP4)](design/video/listora-walkthrough.mp4)
 
 ## What it does
 
@@ -35,8 +41,29 @@ Every staff action goes through roles and permissions, checked in the service th
 
 ## Screenshots
 
-- `design/screens/app` walks through the app as a seller, in light and dark: browsing, filters, a listing, a seller's profile, chats with an offer, posting, packages and notifications.
-- `design/screens/dashboard` has the main dashboard screens, from the Overview to the activity log, and the Overview on a phone.
+**The app**
+
+![Browse, a listing, a chat with an offer, the seller's listings and notifications](design/screens/phones.jpg)
+
+| Browse | Cars & Trucks | Filters | A listing |
+| --- | --- | --- | --- |
+| ![Browse with featured and latest listings](design/screens/app/01-browse-light.png) | ![Cars & Trucks with photos and prices](design/screens/app/03-cars-light.png) | ![Filters from the category's own fields](design/screens/app/04-filters-light.png) | ![A listing with photos, details and the seller](design/screens/app/05-listing-light.png) |
+| **A seller** | **A chat with an offer** | **Selling** | **Dark mode** |
+| ![A seller's profile with reviews](design/screens/app/06-seller-light.png) | ![A conversation with an offer to accept or decline](design/screens/app/08-conversation-light.png) | ![The seller's listings and their status](design/screens/app/09-selling-light.png) | ![Browse in dark mode](design/screens/app/01-browse-dark.png) |
+
+**The back office**
+
+| Overview | Review queue |
+| --- | --- |
+| ![Overview with the queue, reports and revenue](design/screens/dashboard/01-overview.jpg) | ![Listings waiting for review](design/screens/dashboard/02-listings.jpg) |
+| **Reviewing a listing** | **Live listings** |
+| ![A listing under review with its photos and the decision panel](design/screens/dashboard/03-listing-review.jpg) | ![Live listings with their cover photos](design/screens/dashboard/16-live-listings.jpg) |
+| **A report and its decision** | **Category fields** |
+| ![A reported review and the decision panel](design/screens/dashboard/07-report-decision.jpg) | ![The fields each category asks for](design/screens/dashboard/04-category-fields.jpg) |
+| **Payments** | **Team activity** |
+| ![Stripe payments for packages](design/screens/dashboard/10-payments.jpg) | ![Every staff decision in the activity log](design/screens/dashboard/14-team-activity.jpg) |
+
+All the screens, the app in light and dark and the back office, are in [`design/screens`](design/screens).
 
 The app set is taken by a script, so it can be retaken after a change. Seed the database, start the server, then on the emulator:
 
@@ -51,9 +78,11 @@ Switch the emulator to dark mode and add `--dart-define=TOUR_MODE=dark` for the 
 
 - `web/` is the Next.js project: the admin dashboard, the `/api/v1` routes the app calls, and the services in `web/src/server` that both go through.
 - `mobile/` is the Flutter app.
-- `design/` holds the colour tokens both projects are generated from, and the screenshots.
+- `design/` holds the colour tokens both projects are generated from, the screenshots and the walkthrough video.
 
 US cities and ZIP codes come from Census Bureau files (public domain). The processed data is checked in under `web/src/seed/data`, and `web/scripts/build-places.mjs` rebuilds it.
+
+The demo listings' photos in `web/src/seed/photos` are from [Pexels](https://www.pexels.com), free to use under the Pexels license. Each file is named after its listing's title, and `npm run seed` uploads them to the bucket when S3 is set up.
 
 ## Running locally
 

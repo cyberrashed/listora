@@ -42,9 +42,8 @@ void main() {
     await tester.tap(find.text('2015 Honda Civic LX, one owner'));
 
     // Dana is verified in the seed, and has a review.
-    await waitFor(tester, find.text('Dana Whitfield'));
-    await tester.ensureVisible(find.text('Dana Whitfield'));
-    await tester.pump();
+    await waitFor(tester, find.text('Message seller'));
+    await scrollTo(tester, find.text('Dana Whitfield'));
     await tester.tap(find.text('Dana Whitfield'));
     await waitFor(tester, find.text('Follow'));
     expect(find.text('Verified'), findsOneWidget);

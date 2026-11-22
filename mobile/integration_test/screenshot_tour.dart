@@ -79,8 +79,7 @@ void main() {
     await waitFor(tester, find.text('Message seller'));
     await shot('listing');
 
-    await tester.ensureVisible(find.text('Wyatt Lindgren'));
-    await tester.pump();
+    await scrollTo(tester, find.text('Wyatt Lindgren'));
     await tester.tap(find.text('Wyatt Lindgren'));
     await waitFor(tester, find.textContaining('On Listora since'));
     await shot('seller');

@@ -1,6 +1,8 @@
 // Resets the database to a known demo state.
 //
 //   npm run seed
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
 import mongoose from "mongoose";
 import { Activity } from "@/server/activity/activity.model";
 import { hashPassword } from "@/server/auth/password";
@@ -14,11 +16,13 @@ import {
   markListingSold,
   rejectListing,
 } from "@/server/listings/listings";
+import { Photo } from "@/server/media/photo.model";
+import { deletePhotos, uploadPhoto } from "@/server/media/photos";
 import { loadPlaces } from "@/server/places/load";
 import { Place } from "@/server/places/place.model";
 import type { Actor } from "@/server/staff/authorize";
 import { Role, Staff } from "@/server/staff/staff.model";
-import { User } from "@/server/users/user.model";
+import { User, type UserDoc } from "@/server/users/user.model";
 import { catalog, type CategorySeed } from "./catalog";
 import { seedContent } from "./content";
 import { listings } from "./listings";
@@ -131,6 +135,34 @@ async function seedCatalog() {
 
 // Listings go through the same services a seller and a moderator use, then
 // their dates are moved back so the queue and the market have some history.
+// Each listing's photos are named after its title, "2010-honda-fit-sport-1.jpg"
+// and on. They go to the S3 bucket, so without one the listings have none.
+const photoDir = path.resolve("src/seed/photos");
+const photoFiles = readdirSync(photoDir).filter((name) =>
+  name.endsWith(".jpg"),
+);
+const withPhotos = Boolean(process.env.S3_BUCKET);
+let photoCount = 0;
+
+const slug = (title: string) =>
+  title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+async function uploadListingPhotos(seller: UserDoc, title: string) {
+  if (!withPhotos) return [];
+  const names = photoFiles
+    .filter((name) => name.replace(/-\d+\.jpg$/, "") === slug(title))
+    .sort();
+  const photos = await Promise.all(
+    names.map((name) =>
+      uploadPhoto(seller, readFileSync(path.join(photoDir, name))),
+    ),
+  );
+  return photos.map((photo) => photo.id);
+}
+
 async function seedListings() {
   const [fields, categories] = await Promise.all([
     CustomField.find().lean(),
@@ -145,6 +177,8 @@ async function seedListings() {
     const [city, state] = item.city.split(", ");
     const place = (await Place.findOne({ kind: "city", city, state }).lean())!;
 
+    const photoIds = await uploadListingPhotos(seller, item.title);
+    photoCount += photoIds.length;
     const { id } = await createListing(seller, {
       title: item.title,
       description: item.description,
@@ -158,6 +192,7 @@ async function seedListings() {
       ),
       placeId: String(place._id),
       showPhone: Boolean(seller.phone),
+      photoIds,
     });
 
     const live = item.fate === "approved" || item.fate === "sold";
@@ -196,6 +231,8 @@ async function seedListings() {
 
 async function seed() {
   const { connection } = await connectDb();
+  // The old listings' photo files go first, or the bucket keeps them forever.
+  if (withPhotos) await deletePhotos(await Photo.find().distinct("_id"));
   // Collection by collection: a hosted database user may read and write but
   // not drop the whole database.
   for (const collection of await connection.db!.collections()) {
@@ -279,7 +316,7 @@ async function seed() {
       `Seeded 3 roles, 3 staff and ${customers.length} customers,`,
       `${catalogCounts.categories} categories with ${catalogCounts.fields} fields,`,
       `${places.cities} cities and ${places.zips} ZIP codes,`,
-      `${listingCount} listings,`,
+      `${listingCount} listings with ${photoCount} photos,`,
       `${featured} of them featured,`,
       `${sales.packages} packages and ${sales.payments} payments,`,
       `${trust.conversations} conversations, ${trust.reviews} reviews,`,
