@@ -3,6 +3,7 @@ import { z } from "zod";
 import { hashPassword } from "../auth/password";
 import { email, newPassword, personName } from "../auth/schemas";
 import { connectDb, isObjectId } from "../db";
+import { refuseInDemo } from "../demo";
 import { AppError } from "../errors";
 import { type Actor, authorize } from "./authorize";
 import { type Permission, permissionKeys } from "./permissions";
@@ -69,6 +70,7 @@ export async function createStaff(
   input: z.infer<typeof newStaff>,
 ) {
   authorize(actor, "team.manage");
+  refuseInDemo();
   await connectDb();
 
   if (!(await Role.exists({ _id: input.roleId }))) throw notFound("role");
@@ -97,6 +99,7 @@ export async function setStaffActive(
   active: boolean,
 ) {
   authorize(actor, "team.manage");
+  refuseInDemo();
   await connectDb();
 
   const member = isObjectId(staffId) ? await Staff.findById(staffId) : null;
@@ -122,6 +125,7 @@ export async function createRole(
   input: z.infer<typeof roleInput>,
 ) {
   authorize(actor, "team.manage");
+  refuseInDemo();
   await connectDb();
 
   if (await Role.exists({ name: input.name })) {
@@ -138,6 +142,7 @@ export async function updateRolePermissions(
   permissions: Permission[],
 ) {
   authorize(actor, "team.manage");
+  refuseInDemo();
   await connectDb();
 
   const role = isObjectId(roleId) ? await Role.findById(roleId) : null;
@@ -152,6 +157,7 @@ export async function updateRolePermissions(
 
 export async function deleteRole(actor: Actor, roleId: string) {
   authorize(actor, "team.manage");
+  refuseInDemo();
   await connectDb();
 
   const role = isObjectId(roleId) ? await Role.findById(roleId) : null;

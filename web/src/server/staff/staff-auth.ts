@@ -1,8 +1,10 @@
 import "server-only";
+import type { Types } from "mongoose";
 import { verifyPassword } from "../auth/password";
 import type { Credentials } from "../auth/schemas";
 import { hashToken, randomToken } from "../auth/tokens";
 import { connectDb } from "../db";
+import { type DemoAccount, demoAccounts, demoMode } from "../demo";
 import { AppError } from "../errors";
 import type { Actor } from "./authorize";
 import type { Permission } from "./permissions";
@@ -25,10 +27,30 @@ export async function signIn({ email, password }: Credentials) {
     );
   }
 
+  return openSession(staff._id);
+}
+
+/** One click into a seeded account, only in the public demo. */
+export async function signInDemo(account: DemoAccount) {
+  if (!demoMode()) throw new AppError("not_found", "There's no demo here.");
+  await connectDb();
+
+  const staff = await Staff.findOne({ email: demoAccounts[account].email });
+  // Missing only while the daily reset is seeding the data again.
+  if (!staff?.active) {
+    throw new AppError(
+      "conflict",
+      "The demo is being reset. Try again in a minute.",
+    );
+  }
+  return openSession(staff._id);
+}
+
+async function openSession(staffId: Types.ObjectId) {
   const token = randomToken();
   const expiresAt = new Date(Date.now() + STAFF_SESSION_TTL_MS);
   await StaffSession.create({
-    staffId: staff._id,
+    staffId,
     tokenHash: hashToken(token),
     expiresAt,
   });

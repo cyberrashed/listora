@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { record } from "../activity/activity";
 import { connectDb } from "../db";
+import { refuseInDemo } from "../demo";
 import { type Actor, authorize } from "../staff/authorize";
 import { Settings } from "./settings.model";
 
@@ -44,6 +45,7 @@ export async function updateSettings(
   input: z.infer<typeof settingsInput>,
 ) {
   authorize(actor, "settings.manage");
+  refuseInDemo();
   await connectDb();
 
   const before = await getSettings();

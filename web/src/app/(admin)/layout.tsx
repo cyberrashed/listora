@@ -4,6 +4,7 @@ import { Account } from "@/features/shell/account";
 import { MobileMenu } from "@/features/shell/mobile-menu";
 import { SearchForm } from "@/features/shell/search-form";
 import { SidebarNav } from "@/features/shell/sidebar-nav";
+import { demoMode } from "@/server/demo";
 import { Mark } from "@/ui/mark";
 
 // The frame: sidebar and top bar share one tinted ground, and the page sits
@@ -35,6 +36,13 @@ export default function AdminLayout({ children }: LayoutProps<"/">) {
           <SidebarNav />
         </aside>
         <main className="bg-surface border-line min-h-[calc(100svh-3rem)] p-4 lg:mr-2 lg:mb-2 lg:min-h-[calc(100svh-3.5rem)] lg:rounded-sheet lg:border lg:p-6">
+          {demoMode() && (
+            <p className="bg-raised text-small text-muted mb-5 rounded-control px-3 py-2">
+              Public demo: anyone can sign in, and the data goes back to the
+              seed every day. Changes to the team and the settings are turned
+              off.
+            </p>
+          )}
           {children}
         </main>
       </div>

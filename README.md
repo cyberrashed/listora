@@ -4,7 +4,7 @@
 
 A classifieds marketplace for the US market: an Android app built with Flutter, and a Next.js back office that also serves the app's API. Data lives in MongoDB.
 
-The back office and the API run at [listora-xi.vercel.app](https://listora-xi.vercel.app), with the data on MongoDB Atlas.
+**Live demo:** [listora-xi.vercel.app](https://listora-xi.vercel.app) runs the back office and the API, with the data on MongoDB Atlas. Pick a role on the sign-in page (Owner, Moderator or Support) to open it with one click. The demo data goes back to the seed every day, and changes to the team and the settings are turned off there.
 
 [![The walkthrough video: the app, then the back office](design/video/listora-walkthrough-poster.jpg)](design/video/listora-walkthrough.mp4)
 
@@ -174,6 +174,10 @@ cd web && npm run cron
 ```
 
 The job only touches what is due, so running it more often does no harm. On Vercel, `web/vercel.json` runs it once a day.
+
+## Public demo
+
+With `DEMO_MODE=true`, the sign-in page offers the three seeded staff accounts, and one click signs a visitor in without a password. Since anyone can open them, changes to the team and the settings are refused, and the daily job seeds the data again (keeping the places), so each day starts fresh. The live copy runs this way. Leave it off anywhere else.
 
 ## Payments
 
